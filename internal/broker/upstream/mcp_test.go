@@ -466,6 +466,7 @@ func TestOnConnectionLost_SkippedForStatelessUpstream(t *testing.T) {
 	defer func() { _ = up.Disconnect() }()
 
 	require.Empty(t, up.currentSession().ID(), "session ID must be empty for stateless upstream")
+	require.True(t, up.UsesStatelessProtocol(), "session-less upstream must be treated as stateless")
 
 	connectionLost := make(chan error, 1)
 	up.OnConnectionLost(func(err error) {

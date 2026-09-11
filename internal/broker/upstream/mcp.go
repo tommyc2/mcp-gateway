@@ -455,18 +455,17 @@ func (up *MCPServer) OnConnectionLost(handler func(err error)) {
 	}()
 }
 
-// UsesStatelessProtocol returns true if the upstream negotiated protocol
-// version 2026-07-28 or later (stateless, no sessions).
+// UsesStatelessProtocol reports whether the upstream is stateless: negotiated
+// 2026-07-28+, or session-less (no Mcp-Session-Id, e.g. a 2025 streamable-HTTP
+// upstream with sessionIdGenerator disabled). both skip session-keyed ops
+// (the GET SSE watcher and the ping). false before connect.
 func (up *MCPServer) UsesStatelessProtocol() bool {
-	return up.init != nil && up.init.ProtocolVersion >= protocol.Version2026
-}
-
-// IsSessionless reports whether the current upstream connection has no
-// server-assigned Mcp-Session-Id. This is distinct from UsesStatelessProtocol:
-// a 2025 upstream running the streamable-HTTP transport in stateless mode
-// (sessionIdGenerator disabled) issues no session ID. Returns false when not
-// connected — there is no session to classify yet.
-func (up *MCPServer) IsSessionless() bool {
+	if up.init == nil {
+		return false
+	}
+	if up.init.ProtocolVersion >= protocol.Version2026 {
+		return true
+	}
 	session := up.currentSession()
 	return session != nil && session.ID() == ""
 }

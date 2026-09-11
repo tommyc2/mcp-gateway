@@ -109,11 +109,9 @@ type MCP interface {
 	ToolsCacheMetadata() CacheMetadata
 	// PromptsCacheMetadata returns cache metadata from the last prompts/list response.
 	PromptsCacheMetadata() CacheMetadata
-	// UsesStatelessProtocol returns true if the upstream negotiated 2026-07-28 or later.
+	// UsesStatelessProtocol returns true if the upstream is stateless: negotiated
+	// 2026-07-28+ or session-less (no Mcp-Session-Id).
 	UsesStatelessProtocol() bool
-	// IsSessionless returns true if the upstream connection has no server-assigned
-	// Mcp-Session-Id (stateless transport), independent of the negotiated version.
-	IsSessionless() bool
 }
 
 // ActiveMCPServer is the handle returned by Start. It exposes read-only
